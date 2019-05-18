@@ -10,10 +10,10 @@ import (
 
 // Task is the structure of the task.
 type Task struct {
-	ID        int64     `datastore:"-"`
-	Title     string    `datastore:"title"`
-	Status    Status    `datastore:"status"`
-	CreatedAt time.Time `datastore:"createdAt"`
+	ID        int64     `datastore:"-" json:"ID"`
+	Title     string    `datastore:"title" json:"title"`
+	Status    Status    `datastore:"status" json:"status"`
+	CreatedAt time.Time `datastore:"createdAt" json:"createdAt"`
 }
 
 func newTask(title string) *Task {
