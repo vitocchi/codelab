@@ -33,6 +33,28 @@ func TaskManager(w http.ResponseWriter, r *http.Request) {
 
 	// 一覧取得
 	case http.MethodGet:
+		t, err := getAllTask()
+		if err != nil {
+			e := errors.Errorf("get error :%v", err)
+			responseWrite(w, http.StatusInternalServerError, e.Error(), e)
+			return
+		}
+
+		if len(t) < 1 {
+			responseWrite(w, http.StatusOK, "0 tasks", nil)
+			return
+		}
+
+		b, err := json.Marshal(t)
+		if err != nil {
+			e := errors.Errorf("json marshal error :%v", err)
+			responseWrite(w, http.StatusInternalServerError, e.Error(), e)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(b)
+
 
 	// ステータス変更
 	case http.MethodPatch:

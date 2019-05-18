@@ -36,3 +36,23 @@ func (t Task) add() error {
 	_, err = client.Put(ctx, newKey, &t)
 	return err
 }
+
+func getAllTask() ([]Task, error) {
+	client, err := datastore.NewClient(ctx, "wwgt-codelabs")
+	if err != nil {
+		return nil, err
+	}
+	var t []Task
+
+	q := datastore.NewQuery(os.Getenv("MY_CODE"))
+	keys, err := client.GetAll(ctx, q, &t)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, key := range keys {
+		t[i].ID = key.ID
+	}
+
+	return t, nil
+}
