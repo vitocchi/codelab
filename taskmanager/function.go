@@ -58,6 +58,22 @@ func TaskManager(w http.ResponseWriter, r *http.Request) {
 
 	// ステータス変更
 	case http.MethodPatch:
+		param, code, err := getJSON(r.Header.Get("Content-Type"), r.Body)
+		if err != nil {
+			responseWrite(w, code, err.Error(), err)
+			return
+		}
+
+		t := setTask(param.ID, param.Title, param.Status)
+
+		if err := t.update(); err != nil {
+			e := errors.Errorf("patch error :%v", err)
+			responseWrite(w, http.StatusInternalServerError, e.Error(), e)
+			return
+		}
+
+		msg := fmt.Sprintf("%v updated", t)
+		responseWrite(w, http.StatusOK, msg, nil)
 
 	// 削除
 	case http.MethodDelete:

@@ -58,3 +58,46 @@ func getAllTask() ([]Task, error) {
 
 	return t, nil
 }
+
+func setTask(id int64, title string, status Status) *Task {
+	return &Task{
+		ID: id,
+		Title: title,
+		Status: status,
+		CreatedAt: time.Now(),
+	}
+}
+
+func (t Task) update() error {
+	ctx := context.Background()
+
+	client, err := datastore.NewClient(ctx, "wwgt-codelabs")
+	if err != nil {
+		return err
+	}
+
+	key := datastore.IDKey(os.Getenv("MY_CODE"), t.ID, nil)
+
+	_, err = client.RunInTransaction(ctx, func(tx *datastore.Transaction) error {
+		var gt Task
+
+		if err := tx.Get(key, &gt); err != nil {
+			return err
+		}
+
+		if t.Title == "" {
+			t.Title = gt.Title
+		}
+
+		if err := t.Status.validate(); err != nil {
+			t.Status = gt.Status
+		}
+
+		t.CreatedAt = gt.CreatedAt
+
+		_, err := tx.Put(key, &t)
+		return err
+	})
+
+	return err
+}
