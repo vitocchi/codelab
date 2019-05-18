@@ -38,6 +38,8 @@ func (t Task) add() error {
 }
 
 func getAllTask() ([]Task, error) {
+	ctx := context.Background()
+
 	client, err := datastore.NewClient(ctx, "wwgt-codelabs")
 	if err != nil {
 		return nil, err
